@@ -2,18 +2,26 @@
 
 namespace ratnik_text_console
 {
-    public class Cursor : ICursor
+    public class ConsoleScreen : IConsoleScreen
     {
         private int xPos;
         private int yPos;
-
-        public Cursor()
+        private int page;
+        public ConsoleScreen()
         {
             xPos = 0;
             yPos = 0;
+            page = 0;
         }
 
-        public void SetPos(ConsoleKeyInfo c)
+        public void SetCursorPositionOnNewPage(int newPage)
+        {
+            xPos = 0;
+            yPos = 0;
+            page = newPage;
+        }
+
+        public void SetCursorPosition(ConsoleKeyInfo c)
         {
             if(c.Key == System.ConsoleKey.Enter)
             {
@@ -59,11 +67,17 @@ namespace ratnik_text_console
             return (xPos, yPos);
         }
 
+        public int GetPage()
+        {
+            return page; 
+        }
+
         private void IncressYPos()
         {
-            if (yPos + 1 > System.Console.WindowHeight)
+            if (yPos >= System.Console.WindowHeight - 1)
             {
-                yPos = System.Console.WindowHeight;
+                yPos = 0;
+                page++;
             } 
             else
             {
@@ -76,6 +90,10 @@ namespace ratnik_text_console
         {
             if (yPos - 1 < 0)
             {
+                if(page > 0)
+                {
+                    page--;
+                }
                 yPos = 0;
             }
             else
@@ -87,7 +105,7 @@ namespace ratnik_text_console
 
         private void IncressXPos()
         {
-            if (xPos + 1 >= System.Console.WindowWidth)
+            if (xPos >= System.Console.WindowWidth)
             {
                 IncressYPos();
             }

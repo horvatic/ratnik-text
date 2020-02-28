@@ -8,11 +8,12 @@ namespace ratnik_text_console
         static async Task Main(string[] args)
         {
             var token = new CancellationTokenSource();
-            var output = new ConsoleOutput();
             var reader = new ConsoleReader();
-            var cursor = new Cursor();
+            var screen = new ConsoleScreen();
+            var output = new ConsoleOutput(screen);
+            var fileBuffer = new FileBuffer();
             var ch1 = reader.Subscribe();
-            var consoleManager = new ConsoleManager(output, cursor);
+            var consoleManager = new ConsoleManager(output, screen, fileBuffer);
 
             var consoleManagerTask = Task.Factory.StartNew(async () => await consoleManager.Start(ch1, token.Token));
             var readerTask = Task.Factory.StartNew(async () => await reader.Start(token.Token));

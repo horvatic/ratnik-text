@@ -8,58 +8,42 @@ namespace ratnik_text_console
     public class ConsoleManager
     {
         private readonly IConsoleOutput _consoleOutput;
-        private readonly ICursor _cursor;
+        private readonly IConsoleScreen _consoleScreen;
+        private readonly IFileBuffer _fileBuffer;
 
-        public ConsoleManager(IConsoleOutput consoleOutput, ICursor cursor)
+        public ConsoleManager(IConsoleOutput consoleOutput, IConsoleScreen consoleScreen, IFileBuffer fileBuffer)
         {
             _consoleOutput = consoleOutput;
-            _cursor = cursor;
+            _consoleScreen = consoleScreen;
+            _fileBuffer = fileBuffer;
         }
 
         public async Task Start(Channel<ConsoleKeyInfo> ch, CancellationToken cancellationToken)
         {
-            var capacity = 1028;
-            var buffer = new char[capacity];
-            var pos = 0;
             while (!cancellationToken.IsCancellationRequested)
             {
                 var c = await ch.Reader.ReadAsync();
+                var page = _consoleScreen.GetPage();
                 if (c.Key == ConsoleKey.Backspace)
                 {
-                    if (pos != 0)
-                    {
-                        pos -= 1;
-                        buffer[pos] = ' ';
-                        _consoleOutput.Print(_cursor.GetCursorPosition(), pos, buffer);
-                    }
-                    else
-                    {
-                        buffer[pos] = ' ';
-                        _consoleOutput.Print(_cursor.GetCursorPosition(), pos, buffer);
-                    }
+                    _fileBuffer.Insert(_consoleScreen.GetCursorPosition(), _consoleScreen.GetPage(), ' ');
                 } 
                 else if(c.Key == ConsoleKey.Enter)
                 {
-                    buffer[pos] = '\n';
-                    pos++;
-                    if (pos > capacity)
-                    {
-                        capacity *= 2;
-                        Array.Resize(ref buffer, capacity);
-                    }
+                    _fileBuffer.Insert(_consoleScreen.GetCursorPosition(), _consoleScreen.GetPage(), '\n');
                 }
                 else if(!char.IsControl(c.KeyChar))
                 {
-                    buffer[pos] = c.KeyChar;
-                    _consoleOutput.Print(_cursor.GetCursorPosition(), pos, buffer);
-                    pos++;
-                    if(pos > capacity)
-                    {
-                        capacity *= 2;
-                        Array.Resize(ref buffer, capacity);
-                    }
+                    _fileBuffer.Insert(_consoleScreen.GetCursorPosition(), _consoleScreen.GetPage(), c.KeyChar);
                 }
-                _cursor.SetPos(c);
+
+                _consoleOutput.Print(_fileBuffer);
+
+                _consoleScreen.SetCursorPosition(c);
+                if (_consoleScreen.GetPage() != page)
+                {
+                    _consoleOutput.PrintOnNewPage(_consoleScreen.GetPage(), _fileBuffer);
+                }
             }
         }
     }

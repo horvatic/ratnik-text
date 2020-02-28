@@ -2,6 +2,7 @@
 {
     public interface IConsoleOutput
     {
-        void Print((int xPos, int yPos) cusPos, int bufferPos, char[] buffer);
+        void Print(IFileBuffer fileBuffer);
+        void PrintOnNewPage(int page, IFileBuffer fileBuffer);
     }
 }
