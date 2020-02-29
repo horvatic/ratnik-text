@@ -2,7 +2,7 @@
 {
     public interface IConsoleOutput
     {
-        void Print(IFileBuffer fileBuffer);
+        void Print((int x, int y) pos, IFileBuffer fileBuffer);
         void PrintOnNewPage(int page, IFileBuffer fileBuffer);
     }
 }

@@ -59,7 +59,6 @@ namespace ratnik_text_console
             {
                 IncressXPos();
             }
-            Console.SetCursorPosition(xPos, yPos);
         }
 
         public (int x, int y) GetCursorPosition()
@@ -105,7 +104,7 @@ namespace ratnik_text_console
 
         private void IncressXPos()
         {
-            if (xPos >= System.Console.WindowWidth)
+            if (xPos >= System.Console.WindowWidth - 1)
             {
                 IncressYPos();
             }

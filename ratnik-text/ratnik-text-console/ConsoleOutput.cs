@@ -11,22 +11,25 @@ namespace ratnik_text_console
             _consoleScreen = consoleScreen;
         }
 
-        public void Print(IFileBuffer fileBuffer)
+        public void Print((int x, int y) pos, IFileBuffer fileBuffer)
         {
+            Console.SetCursorPosition(pos.x, pos.y);
+            Console.Write(fileBuffer.Read((pos.x, pos.y), _consoleScreen.GetPage()));
             var (x, y) = _consoleScreen.GetCursorPosition();
             Console.SetCursorPosition(x, y);
-            Console.Write(fileBuffer.Read((x, y), _consoleScreen.GetPage()));
         }
 
         public void PrintOnNewPage(int page, IFileBuffer fileBuffer)
         {
+            Console.Clear();
             Console.SetCursorPosition(0, 0);
-            for (var x = 0; x < System.Console.WindowWidth; x++)
+            var buffer = fileBuffer.ReadPage(page);
+            for (var y = 0; y < Console.WindowHeight; y++)
             {
-                for (var y = 0; y < System.Console.WindowHeight; y++)
+                for (var x = 0; x < Console.WindowWidth; x++)
                 {
                     Console.SetCursorPosition(x, y);
-                    Console.Write(fileBuffer.Read((x, y), page));
+                    Console.Write(buffer[x + (y * Console.WindowWidth)]);
                 }
             }
             Console.SetCursorPosition(0, 0);

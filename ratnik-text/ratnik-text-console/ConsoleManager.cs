@@ -24,25 +24,41 @@ namespace ratnik_text_console
             {
                 var c = await ch.Reader.ReadAsync();
                 var page = _consoleScreen.GetPage();
+                var pos = _consoleScreen.GetCursorPosition();
+                _consoleScreen.SetCursorPosition(c);
+                var triggerNewPage = false;
+                if (_consoleScreen.GetPage() != page)
+                {
+                    triggerNewPage = true;
+                    page = _consoleScreen.GetPage();
+                    pos = _consoleScreen.GetCursorPosition();
+                }
                 if (c.Key == ConsoleKey.Backspace)
                 {
-                    _fileBuffer.Insert(_consoleScreen.GetCursorPosition(), _consoleScreen.GetPage(), ' ');
+                    pos = _consoleScreen.GetCursorPosition();
+                    _fileBuffer.Insert(pos, page, ' ');
                 } 
                 else if(c.Key == ConsoleKey.Enter)
                 {
-                    _fileBuffer.Insert(_consoleScreen.GetCursorPosition(), _consoleScreen.GetPage(), '\n');
+                    _fileBuffer.Insert(pos, page, '\n');
                 }
                 else if(!char.IsControl(c.KeyChar))
                 {
-                    _fileBuffer.Insert(_consoleScreen.GetCursorPosition(), _consoleScreen.GetPage(), c.KeyChar);
+                    _fileBuffer.Insert(pos, page, c.KeyChar);
+                }
+                else
+                {
+                    pos = _consoleScreen.GetCursorPosition();            
+                    Console.SetCursorPosition(pos.x, pos.y);
                 }
 
-                _consoleOutput.Print(_fileBuffer);
-
-                _consoleScreen.SetCursorPosition(c);
-                if (_consoleScreen.GetPage() != page)
+                if (triggerNewPage)
                 {
                     _consoleOutput.PrintOnNewPage(_consoleScreen.GetPage(), _fileBuffer);
+                }
+                else
+                {
+                    _consoleOutput.Print(pos, _fileBuffer);
                 }
             }
         }

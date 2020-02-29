@@ -33,5 +33,27 @@ namespace ratnik_text_console
             }
             return ' ';
         }
+
+        public char[] ReadPage(int page)
+        {
+            var bufferRange = new char[Console.WindowHeight * Console.WindowWidth];
+            var pagePos = page * Console.WindowHeight * Console.WindowWidth;
+            for (var y = 0; y < Console.WindowHeight; y++)
+            {
+                for (var x = 0; x < Console.WindowWidth; x++)
+                {
+                    var bufferPos = x + (y * Console.WindowWidth) + pagePos;
+                    if (bufferPos < buffer.Length)
+                    {
+                        bufferRange[x + (y * Console.WindowWidth)] = buffer[bufferPos];
+                    } 
+                    else
+                    {
+                        bufferRange[x + (y * Console.WindowWidth)] = ' ';
+                    }
+                }
+            }
+            return bufferRange;
+        }
     }
 }
