@@ -1,64 +1,93 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ratnik_text_console
 {
     public class ConsoleManager
     {
-        private readonly List<List<char>> page;
+        private readonly IFileService _fileService;
+        private readonly IKeyService _keyService;
+        private List<List<char>> page;
         private int line;
         private int col;
 
-        public ConsoleManager()
+        public ConsoleManager(IFileService fileService, IKeyService keyService)
         {
-            page = new List<List<char>>(); ;
+            _fileService = fileService;
+            _keyService = keyService;
+            page = new List<List<char>>();
+            line = 0;
+            col = 0;
+        }
+
+        public ConsoleManager(string filePath, IFileService fileService, IKeyService keyService)
+        {
+            _fileService = fileService;
+            _keyService = keyService;
+            page = _fileService.ReadFile(filePath);
             line = 0;
             col = 0;
         }
 
         public void Start()
         {
-            while (true)
+            var stop = false;
+            while (!stop)
             {
                 var c = Console.ReadKey(true);
                 if (!char.IsControl(c.KeyChar))
                 {
-                    NonControlKey(c.KeyChar);
+                    (col, line) = _keyService.NonControlKey(c.KeyChar, page, col, line);
                 }
                 else if(c.Key == ConsoleKey.F1)
                 {
-                    SaveFile();
+                    Console.Clear();
+                    Console.WriteLine("Enter File Path To Save:");
+                    var path = Console.ReadLine();
+                    Console.WriteLine("Saving");
+                    _fileService.SaveFile(page, col, line, path);
+                }
+                else if (c.Key == ConsoleKey.F2)
+                {
+                    stop = Quit(page, col, line);
+                }
+                else if(c.Key == ConsoleKey.F3)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Enter File Path To Open:");
+                    var path = Console.ReadLine();
+                    Console.WriteLine("Opening");
+                    page = _fileService.ReadFile(path);
+                    line = 0;
+                    col = 0;
                 }
                 else if (c.Key == ConsoleKey.Enter)
                 {
-                    EnterKey();
+                    (col, line) = _keyService.EnterKey(page, line);
                 }
                 else if (c.Key == ConsoleKey.Backspace)
                 {
-                    Backspace();
+                    (col, line) = _keyService.Backspace(page, col, line);
                 }
                 else if(c.Key == ConsoleKey.LeftArrow)
                 {
-                    LeftArrow();
+                    (col, line) = _keyService.LeftArrow(page, col, line);
                 }
                 else if (c.Key == ConsoleKey.RightArrow)
                 {
-                    RightArrow();
+                    (col, line) = _keyService.RightArrow(page, col, line);
                 }
             }
         }
 
-        private void SaveFile()
+        private bool Quit(List<List<char>> page, int col, int line)
         {
             Console.Clear();
-            Console.WriteLine("Enter File Path:");
-            var path = Console.ReadLine();
-            Console.WriteLine("Saving");
-            using var file = new System.IO.StreamWriter(path);
-            foreach (var line in page)
+            Console.WriteLine("Do you want to quit: y/n");
+            var shouldQuit = Console.ReadLine();
+            if (!string.IsNullOrEmpty(shouldQuit) && shouldQuit.ToLower() == "y")
             {
-                file.WriteLine(line.ToArray());
+                return true;
             }
             Console.Clear();
             Console.SetCursorPosition(0, 0);
@@ -68,125 +97,7 @@ namespace ratnik_text_console
                 Console.WriteLine();
             }
             Console.SetCursorPosition(col, line);
-        }
-
-        private void RightArrow()
-        {
-            if (col == page[line].Count && line == page.Count - 1)
-            {
-                return;
-            }
-            if (col == page[line].Count)
-            {
-                line++;
-                col = 0;
-            }
-            else
-            {
-                col++;
-            }
-            Console.SetCursorPosition(col, line);
-        }
-
-        private void LeftArrow()
-        {
-            if (col <= 0 && line <= 0)
-            {
-                return;
-            }
-            if (col <= 0)
-            {
-                line--;
-                col = page[line].Count;
-            }
-            if (col > 0)
-            {
-                col--;
-            }
-            Console.SetCursorPosition(col, line);
-        }
-
-        private void Backspace()
-        {
-            if (col <= 0 && line <= 0)
-            {
-                return;
-            }
-            if (col <= 0)
-            {
-                page.RemoveAt(line);
-                line--;
-                col = page[line].Count;
-                Console.Clear();
-                Console.SetCursorPosition(0, 0);
-                foreach (var p in page)
-                {
-                    Console.Write(p.ToArray());
-                    Console.WriteLine();
-                }
-                Console.SetCursorPosition(col, line);
-                return;
-            }
-            if (col > 0)
-            {
-                col--;
-                page[line].RemoveAt(col);
-            }
-            Console.SetCursorPosition(col, line);
-            Console.Write(' ');
-            Console.SetCursorPosition(col, line);
-        }
-
-        private void EnterKey()
-        {
-            InsertNewLine();
-        }
-
-        private void NonControlKey(char c)
-        {
-            var lineText = page.ElementAtOrDefault(line);
-            while (lineText == null)
-            {
-                page.Add(new List<char>());
-                lineText = page.ElementAtOrDefault(line);
-            }
-            try
-            {
-                lineText[col] = c;
-            }
-            catch
-            {
-                lineText.Add(c);
-            }
-            Console.SetCursorPosition(col, line);
-            Console.Write(lineText[col]);
-            col++;
-            if(col >= Console.WindowWidth - 1)
-            {
-                InsertNewLine();
-            }
-        }
-
-        private void InsertNewLine()
-        {
-            col = 0;
-            line++;
-            try
-            {
-                page.Insert(line, new List<char>());
-            }
-            catch
-            {
-                page.Add(new List<char>());
-            }
-            Console.Clear();
-            Console.SetCursorPosition(0, 0);
-            foreach (var p in page)
-            {
-                Console.Write(p.ToArray());
-                Console.WriteLine();
-            }
-            Console.SetCursorPosition(col, line);
+            return false;
         }
     }
 }
