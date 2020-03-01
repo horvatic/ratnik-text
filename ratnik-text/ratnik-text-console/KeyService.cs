@@ -65,27 +65,35 @@ namespace ratnik_text_console
                 }
                 else
                 {
-                    page[newLine][newCol] = ' ';
+                    page[newLine].RemoveAt(newCol);
                     newLine--;
                 }
                 newCol = page[newLine].Count;
-                Console.Clear();
-                Console.SetCursorPosition(0, 0);
-                foreach (var p in page)
+                var clearLine = newLine;
+                var range = page.Count - newLine;
+                foreach (var p in page.GetRange(newLine, range))
                 {
+                    Console.SetCursorPosition(0, clearLine);
+                    Console.Write(new string(' ', Console.WindowWidth));
+                    Console.SetCursorPosition(0, clearLine);
                     Console.Write(p.ToArray());
                     Console.WriteLine();
+                    clearLine++;
                 }
+                Console.SetCursorPosition(0, page.Count);
+                Console.Write(new string(' ', Console.WindowWidth));
                 Console.SetCursorPosition(newCol, newLine);
                 return (newCol, newLine);
             }
             if (newCol > 0)
             {
                 newCol--;
-                page[newLine][newCol] = ' ';
+                page[newLine].RemoveAt(newCol);
             }
-            Console.SetCursorPosition(newCol, newLine);
-            Console.Write(' ');
+            Console.SetCursorPosition(0, newLine);
+            Console.Write(new string(' ', Console.WindowWidth));
+            Console.SetCursorPosition(0, newLine);
+            Console.Write(page[newLine].ToArray());
             Console.SetCursorPosition(newCol, newLine);
             return (newCol, newLine);
         }
@@ -107,14 +115,17 @@ namespace ratnik_text_console
             }
             try
             {
-                lineText[newCol] = c;
+                lineText.Insert(newCol, c);
             }
             catch
             {
                 lineText.Add(c);
             }
-            Console.SetCursorPosition(newCol, newLine);
-            Console.Write(lineText[newCol]);
+            Console.SetCursorPosition(0, newLine);
+            Console.Write(new string(' ', Console.WindowWidth));
+            Console.SetCursorPosition(0, newLine);
+            Console.Write(lineText.ToArray());
+            Console.SetCursorPosition(newCol + 1, newLine);
             newCol++;
             if (newCol >= Console.WindowWidth - 1)
             {
@@ -135,12 +146,16 @@ namespace ratnik_text_console
             {
                 page.Add(new List<char>());
             }
-            Console.Clear();
-            Console.SetCursorPosition(0, 0);
-            foreach (var p in page)
+            var clearLine = newLine - 1;
+            var range = page.Count - clearLine;
+            foreach (var p in page.GetRange(clearLine, range))
             {
+                Console.SetCursorPosition(0, clearLine);
+                Console.Write(new string(' ', Console.WindowWidth));
+                Console.SetCursorPosition(0, clearLine);
                 Console.Write(p.ToArray());
                 Console.WriteLine();
+                clearLine++;
             }
             Console.SetCursorPosition(newCol, newLine);
             return (newCol, newLine);
