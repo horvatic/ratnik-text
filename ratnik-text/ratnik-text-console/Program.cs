@@ -1,16 +1,21 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace ratnik_text_console
+﻿namespace ratnik_text_console
 {
     class Program
     {
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
-            var console = new ConsoleManager();
-            console.Start();
+            var fileService = new FileService();
+            var keyService = new KeyService();
+            if (args.Length > 0)
+            {
+                var console = new ConsoleManager(args[0], fileService, keyService);
+                console.Start();
+            }
+            else
+            {
+                var console = new ConsoleManager(fileService, keyService);
+                console.Start();
+            }
         }
     }
 }
