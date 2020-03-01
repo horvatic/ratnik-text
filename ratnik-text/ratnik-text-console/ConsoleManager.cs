@@ -13,6 +13,7 @@ namespace ratnik_text_console
 
         public ConsoleManager(IFileService fileService, IKeyService keyService)
         {
+            Console.Clear();
             _fileService = fileService;
             _keyService = keyService;
             page = new List<List<char>>();
@@ -22,6 +23,7 @@ namespace ratnik_text_console
 
         public ConsoleManager(string filePath, IFileService fileService, IKeyService keyService)
         {
+            Console.Clear();
             _fileService = fileService;
             _keyService = keyService;
             page = _fileService.ReadFile(filePath);
