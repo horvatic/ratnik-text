@@ -10,7 +10,7 @@ namespace ratnik_text_console
             var token = new CancellationTokenSource();
             var reader = new ConsoleReader();
             var screen = new ConsoleScreen();
-            var output = new ConsoleOutput(screen);
+            var output = new ConsoleOutput();
             var fileBuffer = new FileBuffer();
             var ch1 = reader.Subscribe();
             var consoleManager = new ConsoleManager(output, screen, fileBuffer);

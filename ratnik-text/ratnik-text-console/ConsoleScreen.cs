@@ -7,6 +7,7 @@ namespace ratnik_text_console
         private int xPos;
         private int yPos;
         private int page;
+
         public ConsoleScreen()
         {
             xPos = 0;
@@ -14,52 +15,55 @@ namespace ratnik_text_console
             page = 0;
         }
 
-        public void SetCursorPositionOnNewPage(int newPage)
+        public void SetCursorPositionOnNewPage()
         {
             xPos = 0;
             yPos = 0;
-            page = newPage;
         }
 
-        public void SetCursorPosition(ConsoleKeyInfo c)
+        public void SetEnter()
         {
-            if(c.Key == System.ConsoleKey.Enter)
+            IncressYPos();
+        }
+
+        public void SetChar()
+        {
+            IncressXPos();
+        }
+
+        public void SetBackspace(int x)
+        {
+            if (xPos == 0 && yPos > 0)
             {
-                IncressYPos();
+                DecressYPos();
+                xPos = x;
             }
-            else if(c.Key == System.ConsoleKey.Backspace)
-            {
-                if(xPos == 0 && yPos > 0)
-                {
-                    DecressYPos();
-                    xPos = System.Console.WindowWidth - 1;
-                }
-                else if(xPos != 0 || yPos != 0)
-                {
-                    DecressXPos();
-                }
-            }
-            else if (c.Key == System.ConsoleKey.LeftArrow)
+            else if (xPos != 0 || yPos != 0)
             {
                 DecressXPos();
             }
-            else if (c.Key == System.ConsoleKey.RightArrow)
-            {
-                IncressXPos();
-            }
-            else if (c.Key == System.ConsoleKey.UpArrow)
-            {
-                DecressYPos();
-            }
-            else if (c.Key == System.ConsoleKey.DownArrow)
-            {
-                IncressYPos();
-            }
-            else
-            {
-                IncressXPos();
-            }
         }
+
+        public void SetLeftArrow()
+        {
+            SetBackspace(1);
+        }
+
+        public void SetRightArrow()
+        {
+            IncressXPos();
+        }
+
+        public void UnsetLeftArrow()
+        {
+            SetRightArrow();
+        }
+
+        public void UnsetRightArrow()
+        {
+            SetLeftArrow();
+        }
+
 
         public (int x, int y) GetCursorPosition()
         {
@@ -70,6 +74,7 @@ namespace ratnik_text_console
         {
             return page; 
         }
+
 
         private void IncressYPos()
         {
@@ -118,7 +123,7 @@ namespace ratnik_text_console
         {
             if (xPos - 1 < 0)
             {
-                xPos = 0;
+                DecressYPos();
             }
             else
             {

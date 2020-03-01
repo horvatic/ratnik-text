@@ -4,8 +4,13 @@ namespace ratnik_text_console
 {
     public interface IConsoleScreen
     {
-        void SetCursorPosition(ConsoleKeyInfo c);
-        void SetCursorPositionOnNewPage(int newPage);
+        void SetEnter();
+        void SetChar();
+        void SetBackspace(int x);
+        void SetLeftArrow();
+        void SetRightArrow();
+        void UnsetLeftArrow();
+        void UnsetRightArrow();
         (int x, int y) GetCursorPosition();
         int GetPage();
     }
