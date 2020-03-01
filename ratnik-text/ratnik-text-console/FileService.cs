@@ -6,8 +6,21 @@ namespace ratnik_text_console
 {
     public class FileService : IFileService
     {
-        public List<List<char>> ReadFile(string path)
+        public List<List<char>> ReadFile(List<List<char>> oldPage, string path)
         {
+            if(string.IsNullOrEmpty(path))
+            {
+                Console.Clear();
+                Console.SetCursorPosition(0, 0);
+                foreach (var p in oldPage)
+                {
+                    Console.Write(p.ToArray());
+                    Console.WriteLine();
+                }
+                Console.SetCursorPosition(0, 0);
+                return oldPage;
+            }
+
             var page = new List<List<char>>();
             try
             {
@@ -26,7 +39,7 @@ namespace ratnik_text_console
                 Console.WriteLine("Could Not Read File. Press any key to continue");
                 Console.ReadKey();
                 Console.Clear();
-                return page;
+                return oldPage;
             }
             Console.Clear();
             Console.SetCursorPosition(0, 0);
@@ -41,6 +54,18 @@ namespace ratnik_text_console
 
         public void SaveFile(List<List<char>> page, int col, int line, string path)
         {
+            if(string.IsNullOrEmpty(path))
+            {
+                Console.Clear();
+                Console.SetCursorPosition(0, 0);
+                foreach (var p in page)
+                {
+                    Console.Write(p.ToArray());
+                    Console.WriteLine();
+                }
+                Console.SetCursorPosition(col, line);
+                return;
+            }
             using var file = new System.IO.StreamWriter(path);
             foreach (var fileLine in page)
             {
