@@ -26,7 +26,7 @@ namespace ratnik_text_console
             Console.Clear();
             _fileService = fileService;
             _keyService = keyService;
-            page = _fileService.ReadFile(filePath);
+            page = _fileService.ReadFile(new List<List<char>>(), filePath);
             line = 0;
             col = 0;
         }
@@ -44,7 +44,7 @@ namespace ratnik_text_console
                 else if(c.Key == ConsoleKey.F1)
                 {
                     Console.Clear();
-                    Console.WriteLine("Enter File Path To Save:");
+                    Console.WriteLine("Enter File Path To Save, Leave Blank To Cancel:");
                     var path = Console.ReadLine();
                     Console.WriteLine("Saving");
                     _fileService.SaveFile(page, col, line, path);
@@ -56,10 +56,10 @@ namespace ratnik_text_console
                 else if(c.Key == ConsoleKey.F3)
                 {
                     Console.Clear();
-                    Console.WriteLine("Enter File Path To Open:");
+                    Console.WriteLine("Enter File Path To Open, Leave Blank To Cancel:");
                     var path = Console.ReadLine();
                     Console.WriteLine("Opening");
-                    page = _fileService.ReadFile(path);
+                    page = _fileService.ReadFile(page, path);
                     line = 0;
                     col = 0;
                 }
