@@ -98,7 +98,7 @@ namespace ratnik_text_console
                 Console.Write(p.ToArray());
                 Console.WriteLine();
             }
-            Console.SetCursorPosition(col, line);
+            Console.SetCursorPosition(col+1, line);
             return false;
         }
     }

@@ -63,7 +63,7 @@ namespace ratnik_text_console
                     Console.Write(p.ToArray());
                     Console.WriteLine();
                 }
-                Console.SetCursorPosition(col, line);
+                Console.SetCursorPosition(col+1, line);
                 return;
             }
             using var file = new System.IO.StreamWriter(path);
@@ -78,7 +78,7 @@ namespace ratnik_text_console
                 Console.Write(p.ToArray());
                 Console.WriteLine();
             }
-            Console.SetCursorPosition(col, line);
+            Console.SetCursorPosition(col+1, line);
         }
     }
 }
