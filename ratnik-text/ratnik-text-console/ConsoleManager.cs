@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ratnik_text_console
@@ -20,24 +21,24 @@ namespace ratnik_text_console
         {
             while (true)
             {
-                var c = System.Console.ReadKey(true);
+                var c = Console.ReadKey(true);
                 if (!char.IsControl(c.KeyChar))
                 {
                     NonControlKey(c.KeyChar);
                 }
-                else if (c.Key == System.ConsoleKey.Enter)
+                else if (c.Key == ConsoleKey.Enter)
                 {
                     EnterKey();
                 }
-                else if (c.Key == System.ConsoleKey.Backspace)
+                else if (c.Key == ConsoleKey.Backspace)
                 {
                     Backspace();
                 }
-                else if(c.Key == System.ConsoleKey.LeftArrow)
+                else if(c.Key == ConsoleKey.LeftArrow)
                 {
                     LeftArrow();
                 }
-                else if (c.Key == System.ConsoleKey.RightArrow)
+                else if (c.Key == ConsoleKey.RightArrow)
                 {
                     RightArrow();
                 }
@@ -53,13 +54,13 @@ namespace ratnik_text_console
             if (col == page[line].Count)
             {
                 line++;
-                col = page[line].Count;
+                col = 0;
             }
             else
             {
                 col++;
             }
-            System.Console.SetCursorPosition(col, line);
+            Console.SetCursorPosition(col, line);
         }
 
         private void LeftArrow()
@@ -77,7 +78,7 @@ namespace ratnik_text_console
             {
                 col--;
             }
-            System.Console.SetCursorPosition(col, line);
+            Console.SetCursorPosition(col, line);
         }
 
         private void Backspace()
@@ -88,34 +89,31 @@ namespace ratnik_text_console
             }
             if (col <= 0)
             {
-                if(line == page.Count - 1)
-                {
-                    page.RemoveAt(line);
-                }
+                page.RemoveAt(line);
                 line--;
                 col = page[line].Count;
+                Console.Clear();
+                Console.SetCursorPosition(0, 0);
+                foreach (var p in page)
+                {
+                    Console.Write(p.ToArray());
+                    Console.WriteLine();
+                }
+                Console.SetCursorPosition(col, line);
             }
             if (col > 0)
             {
                 col--;
                 page[line].RemoveAt(col);
             }
-            System.Console.SetCursorPosition(col, line);
-            System.Console.Write(' ');
-            System.Console.SetCursorPosition(col, line);
+            Console.SetCursorPosition(col, line);
+            Console.Write(' ');
+            Console.SetCursorPosition(col, line);
         }
 
         private void EnterKey()
         {
-            col = 0;
-            line++;
-            var lineText = page.ElementAtOrDefault(line);
-            while (lineText == null)
-            {
-                page.Add(new List<char>());
-                lineText = page.ElementAtOrDefault(line);
-            }
-            System.Console.SetCursorPosition(col, line);
+            InsertNewLine();
         }
 
         private void NonControlKey(char c)
@@ -134,9 +132,35 @@ namespace ratnik_text_console
             {
                 lineText.Add(c);
             }
-            System.Console.SetCursorPosition(col, line);
-            System.Console.Write(lineText[col]);
+            Console.SetCursorPosition(col, line);
+            Console.Write(lineText[col]);
             col++;
+            if(col >= Console.WindowWidth - 1)
+            {
+                InsertNewLine();
+            }
+        }
+
+        private void InsertNewLine()
+        {
+            col = 0;
+            line++;
+            try
+            {
+                page.Insert(line, new List<char>());
+            }
+            catch
+            {
+                page.Add(new List<char>());
+            }
+            Console.Clear();
+            Console.SetCursorPosition(0, 0);
+            foreach (var p in page)
+            {
+                Console.Write(p.ToArray());
+                Console.WriteLine();
+            }
+            Console.SetCursorPosition(col, line);
         }
     }
 }
