@@ -26,6 +26,10 @@ namespace ratnik_text_console
                 {
                     NonControlKey(c.KeyChar);
                 }
+                else if(c.Key == ConsoleKey.F1)
+                {
+                    SaveFile();
+                }
                 else if (c.Key == ConsoleKey.Enter)
                 {
                     EnterKey();
@@ -43,6 +47,27 @@ namespace ratnik_text_console
                     RightArrow();
                 }
             }
+        }
+
+        private void SaveFile()
+        {
+            Console.Clear();
+            Console.WriteLine("Enter File Path:");
+            var path = Console.ReadLine();
+            Console.WriteLine("Saving");
+            using var file = new System.IO.StreamWriter(path);
+            foreach (var line in page)
+            {
+                file.WriteLine(line.ToArray());
+            }
+            Console.Clear();
+            Console.SetCursorPosition(0, 0);
+            foreach (var p in page)
+            {
+                Console.Write(p.ToArray());
+                Console.WriteLine();
+            }
+            Console.SetCursorPosition(col, line);
         }
 
         private void RightArrow()
@@ -100,6 +125,7 @@ namespace ratnik_text_console
                     Console.WriteLine();
                 }
                 Console.SetCursorPosition(col, line);
+                return;
             }
             if (col > 0)
             {
