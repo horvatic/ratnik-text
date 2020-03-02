@@ -39,6 +39,13 @@ namespace ratnik_text_console
                 Console.WriteLine("Could Not Read File. Press any key to continue");
                 Console.ReadKey();
                 Console.Clear();
+                Console.SetCursorPosition(0, 0);
+                foreach (var p in oldPage)
+                {
+                    Console.Write(p.ToArray());
+                    Console.WriteLine();
+                }
+                Console.SetCursorPosition(0, 0);
                 return oldPage;
             }
             Console.Clear();
@@ -66,10 +73,19 @@ namespace ratnik_text_console
                 Console.SetCursorPosition(col+1, line);
                 return;
             }
-            using var file = new System.IO.StreamWriter(path);
-            foreach (var fileLine in page)
+            try
             {
-                file.WriteLine(fileLine.ToArray());
+                using var file = new System.IO.StreamWriter(path);
+                foreach (var fileLine in page)
+                {
+                    file.WriteLine(fileLine.ToArray());
+                }
+            }
+            catch
+            {
+                Console.Clear();
+                Console.WriteLine("Could Not Save File. Press any key to continue");
+                Console.ReadKey();
             }
             Console.Clear();
             Console.SetCursorPosition(0, 0);
