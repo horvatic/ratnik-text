@@ -10,6 +10,7 @@ F2 To EXIT
 F3 To OPEN
 
 LEFT ARROW To Go LEFT
+
 RIGHT ARROW To Go RIGHT
 
 ## Other:
